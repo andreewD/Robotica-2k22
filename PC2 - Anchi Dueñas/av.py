@@ -218,9 +218,9 @@ if __name__ == "__main__":
     xvals, yvals = bezier_curve(
         [*puntos_ordenados, puntos_ordenados[0]], nTimes=1000)
     plt.plot(xvals, yvals)
-    plt.plot(xpoints, ypoints, "ro") # puntos de control
+    # plt.plot(xpoints, ypoints, "ro") # puntos de control
     plt.axis('off') # quitar ejes
-    for nr in range(len(points)):
-        plt.text(points[nr][0], points[nr][1], nr)  # type: ignore
+    # for nr in range(len(points)):
+    #     plt.text(points[nr][0], points[nr][1], nr)  # type: ignore
     plt.savefig('bezier_curve.png')
     plt.show()

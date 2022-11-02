@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-image = cv2.imread('esferas.jpg')
+image = cv2.imread('esferas2.jpg')
 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 canny = cv2.Canny(gray,50,165)
 color_blanco = np.array([255,255,255])
