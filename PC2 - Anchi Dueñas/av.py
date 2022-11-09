@@ -17,7 +17,6 @@ mascara_rojo1 = cv2.inRange(hsv, rojo_bajo1, rojo_alto1)
 mascara_rojo2 = cv2.inRange(hsv, rojo_bajo2, rojo_alto2)
 mascara_rojoUnido = cv2.add(mascara_rojo1, mascara_rojo2)
 mascara_visualizado = cv2.bitwise_and(image, image, mask=mascara_rojoUnido)
-cv2.imshow('mascarasolorojo', mascara_visualizado)
 cnts, _ = cv2.findContours(
     mascara_rojoUnido, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -27,13 +26,14 @@ for c in cnts:
     approx = cv2.approxPolyDP(c, epsilon, True)
     if len(approx) > 10:
         x, y, w, h = cv2.boundingRect(approx)
-        print(x, y, w, h)
         positions.append([x, y])
+        # Print the last point saved
+        print('Point',len(positions)-1,'=>',positions[-1])
         cv2.putText(image, "("+str(x)+","+str(y)+")",
                     (x, y-5), 1, 1, (0, 0, 0), 1)
 cv2.imshow('imagen', image)
 cv2.imwrite('esferasRojas.jpg', image)
-cv2.waitKey(10000)
+cv2.waitKey()
 cv2.destroyAllWindows()
 
 
@@ -43,6 +43,10 @@ Ptos = []
 for arr_i, arr in enumerate(positions):
     Ptos.append(Punto(arr[0], arr[1], 'Punto'+str(arr_i)))
 
+inicialLabel = input('Ingrese el numero del punto inicial:')
+# print('Ptos, ', Ptos)
+puntoInicial = Ptos[int(inicialLabel)]
+print('pTO INICIAL',puntoInicial)
 global Pc
 global Pm
 
@@ -52,10 +56,10 @@ Pm = 0.2
 tamgeneraciones = 10
 
 
-def crearpoblacion(tampoblacion):
+def crearpoblacion(tampoblacion,inicial):
     pobla = []
     for i in range(tampoblacion):
-        pobla.append(Cromosoma(Ptos, str(i)))
+        pobla.append(Cromosoma(Ptos, str(i),inicial))
     return pobla
 
 
@@ -127,9 +131,9 @@ def corregir(H):
     return H
 
 
-def cruce1punto(P1, P2):
-    H1 = Cromosoma(Ptos, str(0))
-    H2 = Cromosoma(Ptos, str(0))
+def cruce1punto(P1, P2,inicial):
+    H1 = Cromosoma(Ptos, str(0),inicial)
+    H2 = Cromosoma(Ptos, str(0),inicial)
     for i in range(len(P1.Puntos)):
         H1.Puntos[i] = P1.Puntos[i]
         H2.Puntos[i] = P2.Puntos[i]
@@ -158,15 +162,15 @@ def mutacion(H):
 
 
 print("--- Inicia el proceso evolutivo ----------")
-Poblacion = crearpoblacion(tampoblacion)
+Poblacion = crearpoblacion(tampoblacion,int(inicialLabel))
 Poblacion = ordenarporfitness(Poblacion.copy())
 Poblacion = calcularprobabilidadA(Poblacion)
 mostrarpoblacion(Poblacion)
-PoblacionT = crearpoblacion(tampoblacion)
+PoblacionT = crearpoblacion(tampoblacion,int(inicialLabel))
 for t in range(tamgeneraciones):
     for i in range(int(tampoblacion/2)):
         P1, P2 = seleccion(Poblacion.copy())
-        H1, H2 = cruce1punto(P1, P2)
+        H1, H2 = cruce1punto(P1, P2,int(inicialLabel))
         H1 = mutacion(H1)
         H2 = mutacion(H2)
         H1.etiqueta = 'C'+str(2*i)
@@ -181,8 +185,9 @@ print("Mejor solucion")
 Poblacion[len(Poblacion)-1].mostrar()
 
 puntos_ordenados = []
-
+label_puntos_ordenados = []
 for p in Poblacion[len(Poblacion)-1].Puntos:
+    label_puntos_ordenados.append(p.etiqueta)
     puntos_ordenados.append([p.P()[0], p.P()[1]])
 
 print('Puntos ordenados:')
@@ -217,12 +222,13 @@ if __name__ == "__main__":
 
     xvals, yvals = bezier_curve(
         [*puntos_ordenados, puntos_ordenados[0]], nTimes=10000)
-    plt.plot(xvals, yvals, 'r', linewidth=15)
-    plt.plot(xpoints, ypoints, "ro") # puntos de control
-    plt.axis('off') # quitar ejes
+    plt.plot(xvals, yvals, 'r', linewidth=12)
+    plt.plot(xpoints, ypoints, "ro")  # puntos de control
+    plt.axis('off')  # quitar ejes
     for nr in range(len(puntos_ordenados)):
-        plt.text(puntos_ordenados[nr][0], puntos_ordenados[nr][1], nr)  # type: ignore
+        plt.text(puntos_ordenados[nr][0], puntos_ordenados[nr]
+                 [1], label_puntos_ordenados[nr])  # type: ignore
     plt.gca().invert_yaxis()
     plt.savefig('bezier_curve.png')
-    
+
     plt.show()
