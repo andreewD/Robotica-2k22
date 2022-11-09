@@ -12,26 +12,26 @@ class Cromosoma:
         self.etiqueta = 'C'+etiqueta
         self.Puntos = self.aleatorio(Puntos.copy(), inicial)
 
-# def line(p1, p2):
-#     A = (p1[1] - p2[1])
-#     B = (p2[0] - p1[0])
-#     C = (p1[0]*p2[1] - p2[0]*p1[1])
-#     return A, B, -C
+    def line(self, point1, p2):
+        A = (point1[1] - p2[1])  # type: ignore
+        B = (p2[0] - point1[0])  # type: ignore
+        C = (point1[0]*p2[1] - p2[0]*point1[1])  # type: ignore
+        return A, B, -C
 
-# def intersection(L1, L2):
-#     D  = L1[0] * L2[1] - L1[1] * L2[0]
-#     Dx = L1[2] * L2[1] - L1[1] * L2[2]
-#     Dy = L1[0] * L2[2] - L1[2] * L2[0]
-#     if D != 0:
-#         x = Dx / D
-#         y = Dy / D
-#         return x,y
-#     else:
-#         return False
+    def intersection(self, L1, L2):
+        D = L1[0] * L2[1] - L1[1] * L2[0]
+        Dx = L1[2] * L2[1] - L1[1] * L2[2]
+        Dy = L1[0] * L2[2] - L1[2] * L2[0]
+        if D != 0:
+            x = Dx / D
+            y = Dy / D
+            # print('Intersection at', x, y)
+            return True
+        else:
+            return False
 
     def aleatorio(self, Puntos, inicial):
         salida = []
-        # Remove one specific element form array
         initialPoint = Puntos[inicial]
         del Puntos[inicial]
 
@@ -39,6 +39,23 @@ class Cromosoma:
             i = random.randint(0, len(Puntos)-1)
             salida.append(Puntos[i])
             Puntos.pop(i)
+
+        temp = [initialPoint, *salida]
+        # Generate lines from consequent points
+        lines = []
+        for i in range(len(temp)-1):
+            lines.append(self.line(temp[i].P(), temp[i+1].P()))
+        # Check if lines intersect
+        print('--------------------------------')
+        for i in range(len(lines)-1):
+            for j in range(i, len(lines)):
+                if (self.intersection(lines[i], lines[j]) == False):
+                    print('NO INTERSECTION')
+                    print('Candidato',[initialPoint, *salida])
+                else :
+                    print('INTERSECTION')
+                    print('Camino no válido')
+        print('--------------------------------')
         return [initialPoint, *salida]
 
     def distancia(self):
