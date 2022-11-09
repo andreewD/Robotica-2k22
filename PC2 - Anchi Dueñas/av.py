@@ -46,7 +46,7 @@ for arr_i, arr in enumerate(positions):
 global Pc
 global Pm
 
-tampoblacion = 10
+tampoblacion = 100
 Pc = 0.95
 Pm = 0.2
 tamgeneraciones = 10
@@ -211,16 +211,18 @@ def bezier_curve(points, nTimes=1000):
 
 if __name__ == "__main__":
     nPoints = len(puntos_ordenados)+1
-    points = np.random.rand(nPoints, 2)*200
-    xpoints = [p[0] for p in points]
-    ypoints = [p[1] for p in points]
+    # points = np.random.rand(nPoints, 2)*200
+    xpoints = [p[0] for p in [*puntos_ordenados, puntos_ordenados[0]]]
+    ypoints = [p[1] for p in [*puntos_ordenados, puntos_ordenados[0]]]
 
     xvals, yvals = bezier_curve(
-        [*puntos_ordenados, puntos_ordenados[0]], nTimes=1000)
+        [*puntos_ordenados, puntos_ordenados[0]], nTimes=10000)
     plt.plot(xvals, yvals, 'r', linewidth=15)
-    # plt.plot(xpoints, ypoints, "ro") # puntos de control
+    plt.plot(xpoints, ypoints, "ro") # puntos de control
     plt.axis('off') # quitar ejes
-    # for nr in range(len(points)):
-    #     plt.text(points[nr][0], points[nr][1], nr)  # type: ignore
+    for nr in range(len(puntos_ordenados)):
+        plt.text(puntos_ordenados[nr][0], puntos_ordenados[nr][1], nr)  # type: ignore
+    plt.gca().invert_yaxis()
     plt.savefig('bezier_curve.png')
+    
     plt.show()
