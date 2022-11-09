@@ -217,7 +217,7 @@ if __name__ == "__main__":
 
     xvals, yvals = bezier_curve(
         [*puntos_ordenados, puntos_ordenados[0]], nTimes=1000)
-    plt.plot(xvals, yvals)
+    plt.plot(xvals, yvals, 'r', linewidth=15)
     # plt.plot(xpoints, ypoints, "ro") # puntos de control
     plt.axis('off') # quitar ejes
     # for nr in range(len(points)):
